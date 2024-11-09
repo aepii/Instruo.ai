@@ -8,10 +8,26 @@
 """
 
 import fitz
+from language_model import prompt
 
 def main():
-    pdf = fitz.open('')
+    pdf = fitz.open("src/presentations/W6-L9-authentication.pdf")
+    print(pdf.metadata)
+    print(f"Total Pages: {pdf.page_count}")
 
+    with open("src/output/output.txt", "w") as file:
+        for index in range(pdf.page_count):
+            page = pdf[index]
+            text = page.get_text()
+            next_text = pdf[index + 1].get_text() if index + 1 < pdf.page_count else None
+            
+            print(f"Page Number: {index + 1}\n{text}\n")
+            prompt_text = prompt(text, next_text)
+
+            file.write(f"Slide {index + 1}:\n{prompt_text}\n\n")
+
+            if index == 4: 
+                break
 
 if __name__ == "__main__":
     main()
